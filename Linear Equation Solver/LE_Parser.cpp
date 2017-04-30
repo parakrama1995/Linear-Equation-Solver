@@ -27,6 +27,10 @@ namespace
     const char * f_ERROR_MISSING_EXPONENT = "A number contains the '^' character and is missing an exponent.";
     const char * f_ERROR_ILLEGAL_EXPONENT = "A number contains an illegal exponent.";
 };
+if a==c but b==d,
+    aX = cX
+    => X = X (Since a=c)
+   
 
 //======================================================================
 //  Constructor: LinearEquationParser::LinearEquationParser
