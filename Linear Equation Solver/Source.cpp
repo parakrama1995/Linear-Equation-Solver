@@ -598,7 +598,25 @@ SparseArrayProxy<T_KEY, T_ITEM> SparseArray<T_KEY, T_ITEM>::operator [](T_KEY ke
 }
 
 #endif
-
+MPI_Datatype xslice, yslice;
+		MPI_Type_vector(block_step1 + 2, dim3, (block_step2 + 2) * dim3, MPI_DOUBLE, &xslice);
+		MPI_Type_vector((block_step2 + 2) * dim3, 1, 1, MPI_DOUBLE, &yslice);
+		MPI_Type_commit(&xslice);
+		MPI_Type_commit(&yslice);
+		if (rank == 0)
+		{
+			host_work(rank, size, MPI_GROUP_WORLD, row_group,
+				coloum_group, row_comm, coloum_comm,
+				xslice, yslice);
+		}
+		else
+		{
+			slave_work(rank, size, MPI_GROUP_WORLD, row_group,
+				coloum_group, row_comm, coloum_comm,
+				xslice, yslice);
+		}
+		MPI_Finalize();
+		return 0;
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
