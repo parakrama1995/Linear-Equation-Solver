@@ -617,30 +617,60 @@ MPI_Datatype xslice, yslice;
 		}
 		MPI_Finalize();
 		return 0;
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-      
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Source.cpp">
-      <Filter>Source Files</Filter>
-       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </ClCompile>
-  </ItemGroup>
-</Project>
-Contact GitHub API Training Shop Blog About
+void Input::splitInput()
+{
+	auto found = _input.begin();
+	auto* current_container = &_left_expressions;
+	while (found != _input.end())
+	{
+		// Switch container
+		if (_input.front() == '=')
+		{
+			current_container = &_right_expressions;
+			_input.erase(0, 1);
+			prependPlus();
+		}
 
+		found = std::find_if(_input.begin() + 1, _input.end(), [&](const char& char_)
+		{
+			return isSeparatingOperator(char_);
+		});
+
+		current_container->emplace_back(_input.begin(), found);
+		_input.erase(_input.begin(), found);
+		found = _input.begin();
+	}
+}
+
+// Put a + in front of the _input string if necessary
+void Input::prependPlus()
+{
+	if (!isSeparatingOperator(_input.front()))
+		_input.insert(0, 1, '+');
+}
+
+// Find out if character is separating operator in the front of the input (+/-)
+bool Input::isSeparatingOperator(const char& char_)
+{
+	return (char_ == '+' || char_ == '-' || char_ == '=');
+}
+
+std::istream& operator>>(std::istream& is_, Input& obj_)
+{
+	// Create Shorthand
+	auto& input = obj_._input;
+
+	// Istream to string
+	is_ >> input;
+
+	// Remove spaces
+	std::remove_if(input.begin(), input.end(), isspace);
+
+	// Prepend + symbol
+	obj_.prependPlus();
+
+	// Split string to vectors
+	obj_.splitInput();
+
+	return is_;
+}
