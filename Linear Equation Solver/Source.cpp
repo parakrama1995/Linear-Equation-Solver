@@ -1,8 +1,3 @@
-//=======================================================================
-// Credits to William Hallahan
-//=======================================================================
-#pragma warning (disable : 4786)
-
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -13,13 +8,6 @@
 //======================================================================
 //  Function Prototypes.
 //======================================================================
-
-void ReportParserError(const CharString & input_file_name_string,
-                       int file_line,
-                       int error_position,
-                       const char * c_status_ptr);
-
-void ReportProgramVersion();
 
 void DisplayHelp();
 
